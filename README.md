@@ -1,4 +1,4 @@
-# three-js-phonegap-controls
+# three-js-websocket-controls
 
 The aim of this project is to allow a three.js app to be controlled by a phone or a tablet running a phonegap based app.
 

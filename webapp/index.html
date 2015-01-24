@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - controls - phonegap</title>
+		<meta charset="utf-8">
+		<style>
+			body {
+				margin: 0px;
+				background-color: #000000;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family:Monospace;
+				font-size:13px;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color: #ff8800;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="info">
+			<a href="http://threejs.org" target="_blank">three.js</a> - Phonegap based app controls. requires <a href="https://github.com/possan/oculus-rest/" target="_blank">ThreeJsController</a> installed on your phone or tablett <br />
+			(controls : TODO)
+		</div>
+
+		<script src="js/three.min.js"></script>
+		<script src="js/HttpControls.js"></script>
+
+		<script>
+
+			var camera, scene, renderer;
+			var mesh, effect, controls;
+			var clock = new THREE.Clock();
+
+
+			init();
+			animate();
+
+
+			function init() {
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				
+				camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 5000 );
+				camera.position.x = 200;
+				camera.position.y = 250;
+				camera.position.z = -200;
+
+				scene = new THREE.Scene();
+
+				controls = new THREE.HttpControls( camera );
+			
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				controls.handleResize();
+			}
+
+
+			function animate() {
+				requestAnimationFrame( animate );
+				var time = clock.getDelta();
+				controls.update( time );
+				renderer.render( scene, camera );
+			}
+
+		</script>
+
+	</body>
+</html>
