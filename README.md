@@ -1,8 +1,8 @@
-# three-js-websocket-controls
+# three-js-remote-controls
 
-The aim of this project is to allow a three.js app to be controlled by a phone or a tablet running a phonegap based app.
+The aim of this project is to allow a three.js app to be controlled by an android device
 
-Commands and data are transmitted over WiFi, by connecting a websocket client.
+Commands and data are transmitted over WiFi
 
 Comments and help are welcome.
 
