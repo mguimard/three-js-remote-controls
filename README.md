@@ -5,3 +5,5 @@ The aim of this project is to allow a three.js app to be controlled by a phone o
 Commands and data are transmitted over WiFi, by connecting a websocket client.
 
 Comments and help are welcome.
+
+# WIP
