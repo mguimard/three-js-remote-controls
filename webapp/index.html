@@ -22,6 +22,12 @@
 				text-align:center;
 			}
 
+			#info input {
+				background-color: rgba(255,255,255,0.5);
+				border: none;
+				color:white;
+			}
+
 			a {
 				color: #ff8800;
 			}
@@ -30,8 +36,10 @@
 	<body>
 
 		<div id="info">
-			<a href="http://threejs.org" target="_blank">three.js</a> - Phonegap based app controls. requires <a href="https://github.com/possan/oculus-rest/" target="_blank">ThreeJsController</a> installed on your phone or tablett <br />
-			(controls : TODO)
+			<a href="http://threejs.org" target="_blank">three.js</a> - Android app remote controls - requires <a href="./ThreeJsController" target="_blank">ThreeJsController</a> installed on your android device  - <br />Controls : rotate around target point with one finger, pan with two fingers, zoom with two fingers<br /><br />
+			<input type="text" value="192.168.1.20:8887" pattern="" placeholder="ip:port" id="server"/>			
+			<button id="connectButton" onclick="connect()">Connect</button>			
+			<span id="stat">Disconnected</span>
 		</div>
 
 		<script src="js/three.min.js"></script>
@@ -43,26 +51,53 @@
 			var mesh, effect, controls;
 			var clock = new THREE.Clock();
 
-
 			init();
-			animate();
-
+			animate();	
+			connect();
+			
+			function connect(){
+				controls.connect(server.value);
+			}
 
 			function init() {
 
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				
-				camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 5000 );
-				camera.position.x = 200;
-				camera.position.y = 250;
-				camera.position.z = -200;
+				document.body.appendChild( renderer.domElement );
 
+				
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 5000 );
+				camera.position.x = 50;
+				camera.position.y = 20;
+				camera.position.z = 50;
+				
 				scene = new THREE.Scene();
 
+				camera.lookAt(scene.position);
+				
 				controls = new THREE.HttpControls( camera );
-			
+				
+				controls.addEventListener('connected',function(){					
+					stat.innerHTML = "Connected";
+				});
+				
+				controls.addEventListener('connecting',function(){					
+					stat.innerHTML = "Connecting";
+				});
+				
+				controls.addEventListener('disconnected',function(){
+					stat.innerHTML = "Disconnected";
+				});
+
+				var size = 100;
+				var step = 10;
+
+				var gridHelper = new THREE.GridHelper( size, step );		
+				scene.add( gridHelper );
+				
+				var axisHelper = new THREE.AxisHelper( 10 );
+				scene.add( axisHelper );
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
@@ -71,7 +106,7 @@
 			function onWindowResize() {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-				controls.handleResize();
+				//controls.handleResize();
 			}
 
 
@@ -83,6 +118,8 @@
 			}
 
 		</script>
+		
+		
 
 	</body>
 </html>
