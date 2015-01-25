@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v4.view.MotionEventCompat;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -25,16 +26,23 @@ public class DrawSurfaceView extends SurfaceView {
 
     public static final String TAG = "ControlSurfaceView";
     private static final int POINT_SIZE = 50;
-    private final SurfaceHolder surfaceHolder;
+    private SurfaceHolder surfaceHolder;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private String ip;
     private Context mContext;
     private GestureAnalyser analyser = new GestureAnalyser();
 
-    public DrawSurfaceView(Context context, String pIp) {
+    public DrawSurfaceView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public DrawSurfaceView(Context context) {
         super(context);
-        mContext=context;
-        ip=pIp+":8787";
+        init(context);
+    }
+
+    private void init(Context context){
+        mContext = context;
         surfaceHolder = getHolder();
         paint.setColor(Color.CYAN);
         paint.setStyle(Paint.Style.FILL);
@@ -66,27 +74,21 @@ public class DrawSurfaceView extends SurfaceView {
 
         switch(action) {
             case (MotionEvent.ACTION_DOWN) :
-                Log.d(TAG, "Action was DOWN");
                 drawCircles(points);
                 return true;
             case (MotionEvent.ACTION_MOVE) :
-                Log.d(TAG,"Action was MOVE");
                 drawCircles(points);
                 return true;
             case (MotionEvent.ACTION_UP) :
-                Log.d(TAG,"Action was UP");
                 drawText();
                 return true;
             case (MotionEvent.ACTION_CANCEL) :
-                Log.d(TAG,"Action was CANCEL");
                 drawText();
                 return true;
             case (MotionEvent.ACTION_OUTSIDE) :
-                Log.d(TAG,"Movement outside bounds ");
                 drawText();
                 return true;
             default :
-                Log.d(TAG,"Call to super : code=" + action);
                 return super.onTouchEvent(event);
         }
 
@@ -107,10 +109,15 @@ public class DrawSurfaceView extends SurfaceView {
             int yPos = (int) ((canvas.getHeight() / 2) - ((textPaint.descent() + textPaint.ascent()) / 2)) ;
 
             boolean connected = ((MainActivity )mContext).getCommander().isConnected();
+            boolean isWifiConnected = ((MainActivity )mContext).isWifiConnected();
 
-            if(!connected){
+            if(!isWifiConnected){
+                textPaint.setTextSize(60);
+                canvas.drawText("Please enable WIFI", xPos, yPos, textPaint);
+            }
+            else if(!connected){
                 Rect r = new Rect();
-                String message = ip;
+                String message = ((MainActivity )mContext).getIpAddr()+":8887";
                 paint.getTextBounds(message, 0, message.length(), r);
                 yPos += (Math.abs(r.height()))/2;
                 textPaint.setTextSize(60);
@@ -120,7 +127,7 @@ public class DrawSurfaceView extends SurfaceView {
                 canvas.drawText("Connect the three.js app to this ip", xPos, yPos, textPaint);
             }else{
                 textPaint.setTextSize(60);
-                canvas.drawText("Ready to receive gestures", xPos, yPos, textPaint);
+                canvas.drawText("Ready for control", xPos, yPos, textPaint);
             }
 
             surfaceHolder.unlockCanvasAndPost(canvas);

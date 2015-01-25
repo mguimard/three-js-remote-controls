@@ -32,11 +32,10 @@ public class CommandServer extends WebSocketServer {
             Log.i(TAG, "ChatServer started on port: " + s.getPort());
             return s;
         } catch (UnknownHostException e) {
-
+            Log.i(TAG,"Cannot create the command server");
+            return null;
         }
-        return null;
     }
-
 
     public CommandServer(int port) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
@@ -44,6 +43,46 @@ public class CommandServer extends WebSocketServer {
 
     public boolean isConnected(){
         return remoteApp != null;
+    }
+
+    public void send(String key,Object value){
+
+        if(remoteApp == null){
+            return;
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(key, value);
+            remoteApp.send(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendState(HashMap<String, Object> state) {
+
+        if(remoteApp == null){
+            return;
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            Iterator it = state.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pairs = (Map.Entry)it.next();
+                jsonObject.put((String) pairs.getKey(),pairs.getValue());
+            }
+            remoteApp.send(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setOutput(DrawSurfaceView output) {
+        this.output = output;
     }
 
     @Override
@@ -79,59 +118,4 @@ public class CommandServer extends WebSocketServer {
         ex.printStackTrace();
     }
 
-    public void send(String key,String value){
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(key, value);
-            remoteApp.send(jsonObject.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendState(HashMap<String, Object> state) {
-        try {
-            JSONObject jsonObject = new JSONObject();
-            Iterator it = state.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry)it.next();
-                jsonObject.put((String) pairs.getKey(),pairs.getValue());
-            }
-            remoteApp.send(jsonObject.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void swipeLeft() {
-        send("swipe","left");
-    }
-
-    public void swipeRight() {
-        send("swipe","right");
-    }
-
-    public void swipeUp() {
-        send("swipe","up");
-    }
-
-    public void swipeDown() {
-        send("swipe","down");
-    }
-
-    public void zoomIn() {
-        send("zoom","in");
-    }
-
-    public void zoomOut() {
-        send("zoom","out");
-    }
-
-    public void setOutput(DrawSurfaceView output) {
-        this.output = output;
-    }
-
-    public DrawSurfaceView getOutput() {
-        return output;
-    }
 }

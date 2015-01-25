@@ -143,6 +143,10 @@ THREE.HttpControls = function ( object ) {
 
 			var state = JSON.parse(e.data);
 
+			if(state.reset){
+				return scope.reset();
+			}
+
 			var adjustRotate = 0.01;
 			scope.rotateLeft( state.rotateX * adjustRotate );		
 			scope.rotateUp( state.rotateY * adjustRotate );		
